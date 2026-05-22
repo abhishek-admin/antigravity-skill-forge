@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const actionBtn = document.getElementById('action-btn');
   const retryBtn = document.getElementById('retry-btn');
   const copyBtn = document.getElementById('copy-btn');
+  const downloadBtn = document.getElementById('download-btn');
   const rerunBtn = document.getElementById('rerun-btn');
   const mainContent = document.getElementById('main-content');
   const loading = document.getElementById('loading');
@@ -273,12 +274,28 @@ document.addEventListener('DOMContentLoaded', () => {
     navigator.clipboard.writeText(lastRawMarkdown)
       .then(() => {
         copyBtn.textContent = '✅ Copied!';
-        setTimeout(() => { copyBtn.textContent = '📋 Copy Markdown'; }, 1500);
+        setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 1500);
       })
       .catch(() => {
-        copyBtn.textContent = '❌ Copy failed';
-        setTimeout(() => { copyBtn.textContent = '📋 Copy Markdown'; }, 1500);
+        copyBtn.textContent = '❌ Failed';
+        setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 1500);
       });
+  });
+
+  // ---- Download raw markdown as .md file ----
+  downloadBtn.addEventListener('click', () => {
+    if (!lastRawMarkdown) return;
+    const nameMatch = lastRawMarkdown.match(/^---\s*\nname:\s*([^\n]+)/);
+    const filename = nameMatch ? nameMatch[1].trim() + '.md' : 'skill.md';
+    const blob = new Blob([lastRawMarkdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    downloadBtn.textContent = '✅ Saved!';
+    setTimeout(() => { downloadBtn.textContent = '⬇ Download'; }, 1500);
   });
 
   // ---- Event Listeners ----
