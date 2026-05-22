@@ -306,6 +306,12 @@ document.addEventListener('DOMContentLoaded', () => {
   retryBtn.addEventListener('click', runAction);
 
   rerunBtn.addEventListener('click', () => {
+    lastRawMarkdown = '';
+    resultContent.innerHTML = '';
+    skillInput.value = '';
+    charHint.textContent = '0 / 800';
+    charHint.style.color = '#44445a';
+    chrome.storage.session.remove(['cached_result', 'cached_at']);
     showState('idle');
     skillInput.focus();
   });
