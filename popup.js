@@ -292,4 +292,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ---- Settings Panel ----
+  function openSettings() {
+    settingsPanel.classList.remove('hidden');
+    settingsPanel.classList.add('fade-in');
+    chrome.storage.local.get(['gemini_api_key', 'openrouter_api_key'], (data) => {
+      geminiKeyInput.value = data.gemini_api_key || '';
+      openrouterKeyInput.value = data.openrouter_api_key || '';
+    });
+  }
+
+  function closeSettings() {
+    settingsPanel.classList.add('hidden');
+    settingsPanel.classList.remove('fade-in');
+  }
+
+  settingsBtn.addEventListener('click', openSettings);
+  settingsClose.addEventListener('click', closeSettings);
+
+  toggleGeminiKey.addEventListener('click', () => {
+    geminiKeyInput.type = geminiKeyInput.type === 'password' ? 'text' : 'password';
+  });
+  toggleOpenrouterKey.addEventListener('click', () => {
+    openrouterKeyInput.type = openrouterKeyInput.type === 'password' ? 'text' : 'password';
+  });
+
+  saveKeysBtn.addEventListener('click', () => {
+    const updates = {};
+    const gk = geminiKeyInput.value.trim();
+    const ok = openrouterKeyInput.value.trim();
+    if (gk) updates.gemini_api_key = gk;
+    if (ok) updates.openrouter_api_key = ok;
+    if (Object.keys(updates).length === 0) return;
+    chrome.storage.local.set(updates, () => {
+      saveKeysBtn.textContent = '✅ Saved';
+      setTimeout(() => { saveKeysBtn.textContent = 'Save Keys'; }, 1500);
+    });
+  });
+
+  clearKeysBtn.addEventListener('click', async () => {
+    await resetApiKeys();
+    geminiKeyInput.value = '';
+    openrouterKeyInput.value = '';
+    clearKeysBtn.textContent = '✅ Cleared';
+    setTimeout(() => { clearKeysBtn.textContent = 'Clear All Keys'; }, 1500);
+  });
 });
