@@ -8,57 +8,176 @@
   <style>
     :root { --accent: #7c6aff; }
 
+    /* ── Widen popup ── */
+    body {
+      width: 420px;
+      min-height: 220px;
+    }
+
+    /* ── Header tweaks ── */
+    .logo { font-size: 16px; }
+
+    /* ── Subtitle ── */
+    .subtitle {
+      font-size: 12px;
+      color: #6666808;
+      line-height: 1.5;
+    }
+    .subtitle code {
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    /* ── Main content layout ── */
+    #main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── Textarea ── */
     .skill-textarea {
       width: 100%;
-      min-height: 110px;
-      max-height: 160px;
-      padding: 10px 12px;
-      font-size: 12px;
+      min-height: 120px;
+      max-height: 180px;
+      padding: 11px 13px;
+      font-size: 12.5px;
       font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
       color: #e0e0e8;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 10px;
       outline: none;
       resize: vertical;
-      line-height: 1.55;
-      transition: border-color 0.2s ease;
+      line-height: 1.6;
+      transition: border-color 0.2s ease, background 0.2s ease;
       box-sizing: border-box;
     }
 
     .skill-textarea:focus {
-      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .skill-textarea::placeholder {
-      color: #44445a;
-      line-height: 1.55;
+      color: #3a3a52;
+      line-height: 1.6;
     }
 
+    /* ── Char hint ── */
     .char-hint {
       font-size: 10px;
-      color: #44445a;
+      color: #3a3a52;
       text-align: right;
+      margin-top: -4px;
+      letter-spacing: 0.2px;
+    }
+
+    /* ── Forge button override (taller, better glow) ── */
+    #action-btn {
+      padding: 11px 16px;
+      font-size: 13.5px;
+      letter-spacing: 0.2px;
+      border-radius: 10px;
+      margin-top: 2px;
+    }
+
+    /* ── Loading state ── */
+    #loading {
+      padding: 32px 16px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    #loading .spinner {
+      width: 34px;
+      height: 34px;
+      border-width: 3px;
+    }
+
+    .loading-text {
+      font-size: 13px;
+      letter-spacing: 0.3px;
+    }
+
+    .loading-subtext {
+      font-size: 10.5px;
+      color: #44445a;
+      text-align: center;
       margin-top: -8px;
     }
 
-    .copy-md-btn {
+    /* ── Result area ── */
+    .result-header {
+      margin-bottom: 10px;
+    }
+
+    .result-header span {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    .result-content {
+      max-height: 300px;
+      border-radius: 10px;
+      padding: 13px 14px;
+    }
+
+    /* ── Action buttons row (copy + download) ── */
+    .result-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .copy-md-btn, .download-md-btn {
       font-size: 11px;
       font-weight: 600;
       color: var(--accent);
       background: var(--accent-dim);
       border: 1px solid var(--accent-border);
       border-radius: 5px;
-      padding: 3px 9px;
+      padding: 4px 9px;
       cursor: pointer;
       transition: all 0.2s ease;
       white-space: nowrap;
+      line-height: 1.4;
     }
 
-    .copy-md-btn:hover {
+    .copy-md-btn:hover, .download-md-btn:hover {
       background: var(--accent-hover);
+      border-color: color-mix(in srgb, var(--accent) 35%, transparent);
     }
 
+    /* ── Rerun button ── */
+    .rerun-btn {
+      margin-top: 8px;
+      border-radius: 8px;
+    }
+
+    /* ── Frontmatter pre block ── */
+    .result-content pre.frontmatter {
+      font-size: 11px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      background: rgba(124, 106, 255, 0.08);
+      border: 1px solid rgba(124, 106, 255, 0.18);
+      border-radius: 7px;
+      padding: 10px 12px;
+      color: #a89fff;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.6;
+    }
+
+    /* ── Model selector ── */
     .model-row {
       display: flex;
       gap: 6px;
@@ -82,6 +201,7 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238888a0' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 10px center;
+      background-color: rgba(255, 255, 255, 0.04);
       padding-right: 28px;
     }
 
@@ -118,34 +238,27 @@
 
     .model-status {
       font-size: 10px;
-      padding: 4px 8px;
-      border-radius: 4px;
-      margin-top: -2px;
+      padding: 5px 9px;
+      border-radius: 5px;
+      line-height: 1.4;
     }
 
     .model-status.success {
       color: #4ade80;
-      background: rgba(74, 222, 128, 0.1);
-      border: 1px solid rgba(74, 222, 128, 0.2);
+      background: rgba(74, 222, 128, 0.08);
+      border: 1px solid rgba(74, 222, 128, 0.18);
     }
 
     .model-status.error {
       color: #f87171;
-      background: rgba(248, 113, 113, 0.1);
-      border: 1px solid rgba(248, 113, 113, 0.2);
+      background: rgba(248, 113, 113, 0.08);
+      border: 1px solid rgba(248, 113, 113, 0.18);
     }
 
-    .result-content pre.frontmatter {
-      font-size: 11px;
-      font-family: 'Consolas', 'Monaco', monospace;
-      background: var(--accent-dim);
-      border: 1px solid var(--accent-border);
-      border-radius: 6px;
-      padding: 8px 10px;
-      color: var(--accent-light);
-      margin-bottom: 8px;
-      white-space: pre-wrap;
-      word-break: break-word;
+    /* ── Footer ── */
+    .footer {
+      margin-top: 2px;
+      padding-top: 10px;
     }
   </style>
 </head>
@@ -183,11 +296,11 @@
     </div>
 
     <div id="main-content">
-      <p class="subtitle">Describe a skill idea → get a ready-to-install <code>SKILL.md</code></p>
+      <p class="subtitle">Describe a skill idea in plain English → get a ready-to-install <code>SKILL.md</code></p>
       <textarea
         id="skill-input"
         class="skill-textarea"
-        placeholder="Describe your skill idea in plain English.&#10;&#10;Example: &quot;Whenever Claude is about to push to git, it should first check for .env files in staged changes and block the push if any are found.&quot;"
+        placeholder="Describe your skill idea in plain English.&#10;&#10;Example: &quot;Whenever you finish a task, always tell me what you did, what you changed, and if there's anything I should check.&quot;"
       ></textarea>
       <p class="char-hint" id="char-hint">0 / 800</p>
       <button id="action-btn" class="primary-btn">
@@ -198,13 +311,15 @@
     <div id="loading" class="hidden">
       <div class="spinner"></div>
       <p class="loading-text">Forging your skill...</p>
+      <p class="loading-subtext">Gemini is generating your SKILL.md</p>
     </div>
 
     <div id="result" class="hidden">
       <div class="result-header">
         <span>SKILL.md</span>
         <div class="result-actions">
-          <button id="copy-btn" class="copy-md-btn">📋 Copy Markdown</button>
+          <button id="copy-btn" class="copy-md-btn">📋 Copy</button>
+          <button id="download-btn" class="download-md-btn">⬇ Download</button>
         </div>
       </div>
       <div id="result-content" class="result-content"></div>
