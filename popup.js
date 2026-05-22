@@ -276,4 +276,20 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
+  // ---- Event Listeners ----
+  actionBtn.addEventListener('click', runAction);
+  retryBtn.addEventListener('click', runAction);
+
+  rerunBtn.addEventListener('click', () => {
+    showState('idle');
+    skillInput.focus();
+  });
+
+  skillInput.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      runAction();
+    }
+  });
+
 });
