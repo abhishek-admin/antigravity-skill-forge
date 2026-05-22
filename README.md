@@ -1,58 +1,65 @@
 # Antigravity Skill Forge
 
-![demo](demo.gif)
+> Plain English in. Ready-to-install SKILL.md out.
 
-Describe a skill idea in plain English. Get a ready-to-install `SKILL.md` for Antigravity agents.
+**Day 07 / 180 — 180 Days of Building**
+
+Writing a behavioral instruction file for a Gemini coding agent sounds simple until you hit the spec. The name must be kebab-case. The description must start with "Use when…" and describe the trigger, not the workflow. There are 11 formatting rules across frontmatter and body structure. This extension removes all of them — describe the skill idea in plain English and get a spec-compliant SKILL.md in under 10 seconds.
+
+![Demo](antigrav.gif)
 
 ---
 
 ## What it does
 
-Type any skill idea — "whenever Claude is about to delete a file, check if it's referenced elsewhere first" — and Skill Forge generates a properly formatted `SKILL.md` using the real Antigravity spec:
-
-- Valid YAML frontmatter (`name` in kebab-case, `description` starting with "Use when...")
-- Correct body structure: Overview, When to Use, Core Pattern, Common Mistakes
-- Claude Search Optimization baked in — keywords, token budget, triggering conditions only in description
-- One click to copy raw markdown, paste directly into `~/.claude/skills/your-skill/SKILL.md`
+- **Instant generation** — describe any agent behavior in plain English, get a valid SKILL.md with correct YAML frontmatter and body structure
+- **Spec-compliant output** — all 11 Antigravity formatting rules encoded into the Gemini system prompt so the output installs without edits
+- **Copy or download** — copy the raw markdown to clipboard or download the file directly with the skill name auto-extracted as the filename
+- **Model selector** — switch between Gemini models without changing your API key; fetches live model list from your account
+- **Session memory** — reopening the popup restores your last generated skill for 10 minutes
 
 ---
 
 ## How to use
 
-1. Open the extension
-2. Describe your skill idea in plain English
-3. Click **Forge Skill** (or press Ctrl+Enter)
-4. Click **Copy Markdown**
-5. Paste into `~/.claude/skills/<skill-name>/SKILL.md`
+1. Click the extension icon
+2. Describe the skill idea in plain English — e.g. *"always check staged files for .env before any git push"*
+3. Click **⚡ Forge Skill**
+4. Copy the markdown or hit **⬇ Download** to save the `.md` file
+5. Drop it into your Antigravity agent's skills directory
 
 ---
 
 ## Getting Started
 
-**First launch:** The extension will ask for an API key.
+### 1. Load the extension
+1. Go to `chrome://extensions`
+2. Enable **Developer mode** (top right toggle)
+3. Click **Load unpacked** → select the `antigravity-skill-forge` folder
 
-- **Gemini API key** (recommended) — free at [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
-- **OpenRouter key** — fallback option at [openrouter.ai/keys](https://openrouter.ai/keys)
+### 2. Add your API key
+On first launch, the extension automatically shows a setup screen asking for your API key.
 
-Either one is enough. Keys are stored locally, never sent anywhere except the respective API.
+You only need **one** of the following — enter whichever you have:
+
+- **Gemini API key** — free at [aistudio.google.com](https://aistudio.google.com/apikey)
+- **OpenRouter API key** — free tier at [openrouter.ai](https://openrouter.ai)
+
+If both are saved, Gemini is used first with OpenRouter as automatic fallback when quota runs out. You can update or change keys anytime via the **⚙** icon in the popup.
 
 ---
 
 ## Tech stack
 
 - Chrome Extension Manifest V3
-- Gemini 2.0 Flash (via Gemini API, with OpenRouter fallback)
-- Vanilla JS — no build step, no dependencies
+- Gemini 3.5 Flash (primary) → OpenRouter fallback
+- Paired good/bad examples in system prompt — dropped generation failure rate from 8/20 → 2/20
+- Vanilla JS — no frameworks, no build step
 
 ---
 
-## Install (unpacked)
+## Part of 180 Days of Building
 
-1. Download or clone this repo
-2. Open `chrome://extensions/`
-3. Enable **Developer mode**
-4. Click **Load unpacked** → select this folder
+Shipping one AI Chrome extension every day for 180 days.
 
----
-
-Built by [@happy_ships](https://x.com/happy_ships) · Day 7/180
+Follow along: [@happy_ships](https://x.com/happy_ships)

@@ -1,4 +1,5 @@
 X_REPLIES.MD
 x-post-drafts.txt
 *.gif
+!antigrav.gif
 .DS_Store
