@@ -413,7 +413,9 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsPanel.classList.remove('fade-in');
   }
 
-  settingsBtn.addEventListener('click', openSettings);
+  settingsBtn.addEventListener('click', () => {
+    settingsPanel.classList.contains('hidden') ? openSettings() : closeSettings();
+  });
   settingsClose.addEventListener('click', closeSettings);
 
   toggleGeminiKey.addEventListener('click', () => {

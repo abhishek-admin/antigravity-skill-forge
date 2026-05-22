@@ -422,14 +422,20 @@ h1 {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 15px;
   padding: 4px;
   border-radius: 4px;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, filter 0.2s ease;
   flex-shrink: 0;
+  filter: brightness(2.5);
+  opacity: 0.75;
 }
 
-.toggle-vis-btn:hover { background: rgba(255, 255, 255, 0.08); }
+.toggle-vis-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  filter: brightness(3.5);
+  opacity: 1;
+}
 
 .settings-actions {
   display: flex;
