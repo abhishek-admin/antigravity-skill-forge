@@ -26,11 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastRawMarkdown = '';
 
   function renderMarkdown(text) {
-    // Wrap YAML frontmatter block in <pre> before HTML escaping
+    // Extract frontmatter BEFORE the global HTML escape so the <pre> tag survives
+    let frontmatterHtml = '';
     text = text.replace(/^---\n([\s\S]*?)\n---\n?/, (_match, content) => {
       const escaped = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      return '<pre class="frontmatter">---\n' + escaped + '\n---</pre>\n\n';
+      frontmatterHtml = '<pre class="frontmatter">---\n' + escaped + '\n---</pre>';
+      return '';
     });
+
     let html = text
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/^### (.+)$/gm, '<h4>$1</h4>')
@@ -70,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return '<p>' + t.replace(/\n/g, '<br>') + '</p>';
     }).join('');
 
-    return html;
+    return frontmatterHtml + (frontmatterHtml ? '\n' : '') + html;
   }
 
   function showState(state) {
