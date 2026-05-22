@@ -92,4 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
     showState('error');
   }
 
+  // ---- Character counter ----
+  skillInput.addEventListener('input', () => {
+    const len = skillInput.value.length;
+    charHint.textContent = len + ' / 800';
+    charHint.style.color = len > 700 ? '#ff9966' : '#44445a';
+  });
+
 });
