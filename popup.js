@@ -293,14 +293,89 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ---- Settings Panel ----
+  const modelSelect = document.getElementById('model-select');
+  const refreshModelsBtn = document.getElementById('refresh-models-btn');
+  const modelStatus = document.getElementById('model-status');
+
+  function showModelStatus(msg, type) {
+    modelStatus.textContent = msg;
+    modelStatus.className = 'model-status ' + type;
+    modelStatus.classList.remove('hidden');
+  }
+
+  async function fetchAndPopulateModels(apiKey) {
+    refreshModelsBtn.classList.add('spinning');
+    try {
+      const res = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models?key=' + apiKey + '&pageSize=100'
+      );
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const models = (data.models || [])
+        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+        .map(m => m.name.replace('models/', ''));
+
+      if (models.length === 0) throw new Error('No models found');
+
+      const saved = modelSelect.value;
+      modelSelect.innerHTML = '';
+      models.forEach(id => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        const label = id === 'gemini-3.5-flash' ? '✦ Gemini 3.5 Flash (Active)'
+                    : id === 'gemini-2.5-flash' ? 'Gemini 2.5 Flash'
+                    : id.replace('gemini-', 'Gemini ').replace(/-/g, ' ');
+        opt.textContent = label;
+        modelSelect.appendChild(opt);
+      });
+
+      // Restore previously saved preference or default to gemini-3.5-flash
+      const preferred = saved || 'gemini-3.5-flash';
+      if ([...modelSelect.options].some(o => o.value === preferred)) {
+        modelSelect.value = preferred;
+      }
+
+      showModelStatus('✓ API key active! Loaded ' + models.length + ' Google models.', 'success');
+    } catch (err) {
+      showModelStatus('Could not load models: ' + err.message, 'error');
+    } finally {
+      refreshModelsBtn.classList.remove('spinning');
+    }
+  }
+
   function openSettings() {
     settingsPanel.classList.remove('hidden');
     settingsPanel.classList.add('fade-in');
-    chrome.storage.local.get(['gemini_api_key', 'openrouter_api_key'], (data) => {
+    modelStatus.classList.add('hidden');
+    chrome.storage.local.get(['gemini_api_key', 'openrouter_api_key', 'preferred_model'], (data) => {
       geminiKeyInput.value = data.gemini_api_key || '';
       openrouterKeyInput.value = data.openrouter_api_key || '';
+      if (data.preferred_model) {
+        // Try to set the saved model, may not be in default list yet
+        let exists = [...modelSelect.options].some(o => o.value === data.preferred_model);
+        if (!exists) {
+          const opt = document.createElement('option');
+          opt.value = data.preferred_model;
+          opt.textContent = data.preferred_model;
+          modelSelect.insertBefore(opt, modelSelect.firstChild);
+        }
+        modelSelect.value = data.preferred_model;
+      }
+      if (data.gemini_api_key) {
+        fetchAndPopulateModels(data.gemini_api_key);
+      }
     });
   }
+
+  refreshModelsBtn.addEventListener('click', () => {
+    chrome.storage.local.get(['gemini_api_key'], (data) => {
+      if (!data.gemini_api_key) {
+        showModelStatus('Add a Gemini API key first.', 'error');
+        return;
+      }
+      fetchAndPopulateModels(data.gemini_api_key);
+    });
+  });
 
   function closeSettings() {
     settingsPanel.classList.add('hidden');
@@ -321,8 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const updates = {};
     const gk = geminiKeyInput.value.trim();
     const ok = openrouterKeyInput.value.trim();
+    const model = modelSelect.value;
     if (gk) updates.gemini_api_key = gk;
     if (ok) updates.openrouter_api_key = ok;
+    if (model) updates.preferred_model = model;
     if (Object.keys(updates).length === 0) return;
     chrome.storage.local.set(updates, () => {
       saveKeysBtn.textContent = '✅ Saved';
