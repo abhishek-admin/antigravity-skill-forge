@@ -59,6 +59,82 @@
       background: var(--accent-hover);
     }
 
+    .model-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .model-select {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #e0e0e8;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238888a0' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+
+    .model-select:focus {
+      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    .model-select option {
+      background: #1a1a2e;
+      color: #e0e0e8;
+    }
+
+    .refresh-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #8888a0;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 6px 9px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .refresh-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent-border);
+      background: var(--accent-dim);
+    }
+
+    .refresh-btn.spinning {
+      animation: spin 0.7s linear infinite;
+    }
+
+    .model-status {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: -2px;
+    }
+
+    .model-status.success {
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+    }
+
+    .model-status.error {
+      color: #f87171;
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+
     .result-content pre.frontmatter {
       font-size: 11px;
       font-family: 'Consolas', 'Monaco', monospace;
@@ -156,6 +232,16 @@
           <input type="password" id="openrouter-key-input" class="settings-input" placeholder="Paste OpenRouter key..." />
           <button id="toggle-openrouter-key" class="toggle-vis-btn">👁</button>
         </div>
+        <label class="settings-label">Preferred Model</label>
+        <div class="model-row">
+          <select id="model-select" class="model-select">
+            <option value="gemini-3.5-flash">✦ Gemini 3.5 Flash</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          </select>
+          <button id="refresh-models-btn" class="refresh-btn" title="Fetch available models">↺</button>
+        </div>
+        <div id="model-status" class="model-status hidden"></div>
         <div class="settings-actions">
           <button id="save-keys-btn" class="primary-btn" style="padding:8px 12px;font-size:12px;">Save Keys</button>
           <button id="clear-keys-btn" class="secondary-btn">Clear All Keys</button>
