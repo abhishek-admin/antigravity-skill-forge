@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antigravity Skill Forge</title>
+  <link rel="stylesheet" href="popup.css">
+  <style>
+    :root { --accent: #7c6aff; }
+
+    .skill-textarea {
+      width: 100%;
+      min-height: 110px;
+      max-height: 160px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #e0e0e8;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      outline: none;
+      resize: vertical;
+      line-height: 1.55;
+      transition: border-color 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .skill-textarea:focus {
+      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    .skill-textarea::placeholder {
+      color: #44445a;
+      line-height: 1.55;
+    }
+
+    .char-hint {
+      font-size: 10px;
+      color: #44445a;
+      text-align: right;
+      margin-top: -8px;
+    }
+
+    .copy-md-btn {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 5px;
+      padding: 3px 9px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .copy-md-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .result-content pre.frontmatter {
+      font-size: 11px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--accent-light);
+      margin-bottom: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <span class="logo">⚒</span>
+        <h1>Skill Forge</h1>
+      </div>
+      <div class="header-right">
+        <span class="badge">Antigravity</span>
+        <button id="settings-btn" class="settings-btn" title="API Settings">⚙</button>
+      </div>
+    </div>
+
+    <div id="onboarding" class="hidden">
+      <p class="onboarding-title">👋 Welcome! Add your API key</p>
+      <p class="onboarding-desc">Enter a <strong>Gemini</strong> or <strong>OpenRouter</strong> key — just one is enough to get started.</p>
+      <div class="onboard-field">
+        <label class="settings-label">Gemini API Key <span class="settings-hint">— <a href="https://aistudio.google.com/app/apikey" target="_blank">Get free key ↗</a></span></label>
+        <div class="settings-row">
+          <input type="password" id="onboard-gemini-input" class="settings-input" placeholder="AIza..." />
+          <button id="onboard-toggle-gemini" class="toggle-vis-btn">👁</button>
+        </div>
+      </div>
+      <div class="onboard-field">
+        <label class="settings-label">OpenRouter API Key <span class="settings-hint">— <a href="https://openrouter.ai/keys" target="_blank">Get key ↗</a></span></label>
+        <div class="settings-row">
+          <input type="password" id="onboard-openrouter-input" class="settings-input" placeholder="sk-or-..." />
+          <button id="onboard-toggle-openrouter" class="toggle-vis-btn">👁</button>
+        </div>
+      </div>
+      <button id="onboard-save-btn" class="primary-btn">Get Started →</button>
+    </div>
+
+    <div id="main-content">
+      <p class="subtitle">Describe a skill idea → get a ready-to-install <code>SKILL.md</code></p>
+      <textarea
+        id="skill-input"
+        class="skill-textarea"
+        placeholder="Describe your skill idea in plain English.&#10;&#10;Example: &quot;Whenever Claude is about to push to git, it should first check for .env files in staged changes and block the push if any are found.&quot;"
+      ></textarea>
+      <p class="char-hint" id="char-hint">0 / 800</p>
+      <button id="action-btn" class="primary-btn">
+        <span class="btn-text">⚡ Forge Skill</span>
+      </button>
+    </div>
+
+    <div id="loading" class="hidden">
+      <div class="spinner"></div>
+      <p class="loading-text">Forging your skill...</p>
+    </div>
+
+    <div id="result" class="hidden">
+      <div class="result-header">
+        <span>SKILL.md</span>
+        <div class="result-actions">
+          <button id="copy-btn" class="copy-md-btn">📋 Copy Markdown</button>
+        </div>
+      </div>
+      <div id="result-content" class="result-content"></div>
+      <button id="rerun-btn" class="rerun-btn">↻ Re-forge</button>
+    </div>
+
+    <div id="error" class="hidden">
+      <p class="error-text" id="error-message">Something went wrong.</p>
+      <button id="retry-btn" class="secondary-btn">Retry</button>
+    </div>
+
+    <div id="settings-panel" class="hidden">
+      <div class="settings-header">
+        <span>API Settings</span>
+        <button id="settings-close" class="settings-close">✕</button>
+      </div>
+      <div class="settings-body">
+        <label class="settings-label">Gemini API Key</label>
+        <div class="settings-row">
+          <input type="password" id="gemini-key-input" class="settings-input" placeholder="Paste Gemini key..." />
+          <button id="toggle-gemini-key" class="toggle-vis-btn">👁</button>
+        </div>
+        <label class="settings-label">OpenRouter API Key <span class="settings-hint">(fallback)</span></label>
+        <div class="settings-row">
+          <input type="password" id="openrouter-key-input" class="settings-input" placeholder="Paste OpenRouter key..." />
+          <button id="toggle-openrouter-key" class="toggle-vis-btn">👁</button>
+        </div>
+        <div class="settings-actions">
+          <button id="save-keys-btn" class="primary-btn" style="padding:8px 12px;font-size:12px;">Save Keys</button>
+          <button id="clear-keys-btn" class="secondary-btn">Clear All Keys</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>Built by <a href="https://x.com/happy_ships" target="_blank">@happy_ships</a></span>
+      <span>Day 7/180</span>
+    </div>
+  </div>
+
+  <script src="gemini.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
