@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Antigravity Skill Forge",
+  "description": "Describe a skill idea in plain English — get a ready-to-install SKILL.md for Antigravity agents.",
+  "version": "1.0.0",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "32": "icons/icons32.png"
+    }
+  },
+  "icons": {
+    "32": "icons/icons32.png"
+  },
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*",
+    "https://openrouter.ai/*"
+  ]
+}
