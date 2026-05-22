@@ -262,4 +262,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ---- Copy raw markdown ----
+  copyBtn.addEventListener('click', () => {
+    if (!lastRawMarkdown) return;
+    navigator.clipboard.writeText(lastRawMarkdown)
+      .then(() => {
+        copyBtn.textContent = '✅ Copied!';
+        setTimeout(() => { copyBtn.textContent = '📋 Copy Markdown'; }, 1500);
+      })
+      .catch(() => {
+        copyBtn.textContent = '❌ Copy failed';
+        setTimeout(() => { copyBtn.textContent = '📋 Copy Markdown'; }, 1500);
+      });
+  });
+
 });
