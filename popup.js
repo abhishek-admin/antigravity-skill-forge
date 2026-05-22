@@ -99,4 +99,65 @@ document.addEventListener('DOMContentLoaded', () => {
     charHint.style.color = len > 700 ? '#ff9966' : '#44445a';
   });
 
+  // ---- First-run onboarding ----
+  const onboarding = document.getElementById('onboarding');
+  const onboardGeminiInput = document.getElementById('onboard-gemini-input');
+  const onboardOpenrouterInput = document.getElementById('onboard-openrouter-input');
+  const onboardSaveBtn = document.getElementById('onboard-save-btn');
+
+  function showOnboarding() {
+    onboarding.classList.remove('hidden');
+    mainContent.classList.add('hidden');
+    loading.classList.add('hidden');
+    result.classList.add('hidden');
+    error.classList.add('hidden');
+  }
+
+  function hideOnboarding() { onboarding.classList.add('hidden'); }
+
+  document.getElementById('onboard-toggle-gemini').addEventListener('click', () => {
+    onboardGeminiInput.type = onboardGeminiInput.type === 'password' ? 'text' : 'password';
+  });
+  document.getElementById('onboard-toggle-openrouter').addEventListener('click', () => {
+    onboardOpenrouterInput.type = onboardOpenrouterInput.type === 'password' ? 'text' : 'password';
+  });
+
+  onboardSaveBtn.addEventListener('click', () => {
+    const gk = onboardGeminiInput.value.trim();
+    const ok = onboardOpenrouterInput.value.trim();
+    if (!gk && !ok) {
+      onboardSaveBtn.textContent = '⚠️ Enter at least one key';
+      setTimeout(() => { onboardSaveBtn.textContent = 'Get Started →'; }, 2000);
+      return;
+    }
+    const updates = {};
+    if (gk) updates.gemini_api_key = gk;
+    if (ok) updates.openrouter_api_key = ok;
+    chrome.storage.local.set(updates, () => { hideOnboarding(); initApp(); });
+  });
+
+  function initApp() {
+    showState('idle');
+    skillInput.focus();
+    const len = skillInput.value.length;
+    charHint.textContent = len + ' / 800';
+    charHint.style.color = len > 700 ? '#ff9966' : '#44445a';
+  }
+
+  chrome.storage.local.get(['gemini_api_key', 'openrouter_api_key'], (keys) => {
+    if (!keys.gemini_api_key && !keys.openrouter_api_key) {
+      showOnboarding();
+    } else {
+      chrome.storage.session.get(['cached_result', 'cached_at'], (data) => {
+        if (data.cached_result && data.cached_at && Date.now() - data.cached_at < 10 * 60 * 1000) {
+          lastRawMarkdown = data.cached_result;
+          resultContent.innerHTML = renderMarkdown(data.cached_result);
+          showState('result');
+        } else {
+          initApp();
+        }
+      });
+    }
+  });
+
 });
