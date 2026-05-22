@@ -6,7 +6,7 @@
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const DEFAULT_MODEL = 'gemini-2.0-flash';
+const DEFAULT_MODEL = 'gemini-3.5-flash';
 
 const OPENROUTER_MODELS = [
   'google/gemini-2.5-flash',          // Paid — fast, uses your credits
