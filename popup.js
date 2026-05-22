@@ -239,10 +239,15 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const userPrompt = 'Generate a SKILL.md for the following skill idea:\n\n' + ideaText;
 
+      const preferredModel = await new Promise(resolve => {
+        chrome.storage.local.get(['preferred_model'], d => resolve(d.preferred_model || 'gemini-3.5-flash'));
+      });
+
       const raw = await callGemini(userPrompt, {
         systemInstruction: SYSTEM_PROMPT,
         temperature: 0.4,
         maxTokens: 1024,
+        model: preferredModel,
       });
 
       const cleaned = raw
