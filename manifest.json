@@ -9,11 +9,13 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "32": "icons/icons32.png"
+      "32": "icons/icons32.png",
+      "128": "icons/skill.png"
     }
   },
   "icons": {
-    "32": "icons/icons32.png"
+    "32": "icons/icons32.png",
+    "128": "icons/skill.png"
   },
   "host_permissions": [
     "https://generativelanguage.googleapis.com/*",
