@@ -224,4 +224,42 @@ document.addEventListener('DOMContentLoaded', () => {
     'Now generate a SKILL.md for the user\'s skill idea. Output raw markdown only, starting with ---',
   ].join('\n');
 
+  // ---- Forge Action ----
+  async function runAction() {
+    const ideaText = skillInput.value.trim();
+    if (!ideaText) {
+      skillInput.focus();
+      skillInput.style.borderColor = 'rgba(255, 100, 100, 0.5)';
+      setTimeout(() => { skillInput.style.borderColor = ''; }, 1500);
+      return;
+    }
+
+    showState('loading');
+
+    try {
+      const userPrompt = 'Generate a SKILL.md for the following skill idea:\n\n' + ideaText;
+
+      const raw = await callGemini(userPrompt, {
+        systemInstruction: SYSTEM_PROMPT,
+        temperature: 0.4,
+        maxTokens: 1024,
+      });
+
+      const cleaned = raw
+        .replace(/^```(?:markdown|md)?\n?/i, '')
+        .replace(/\n?```\s*$/i, '')
+        .trim();
+
+      if (!cleaned) {
+        showError('Gemini returned an empty response. Try rephrasing your skill idea.');
+        return;
+      }
+
+      showResult(cleaned);
+    } catch (err) {
+      console.error('Forge failed:', err);
+      showError(err.message || 'Something went wrong. Try again.');
+    }
+  }
+
 });
