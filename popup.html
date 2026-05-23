@@ -6,286 +6,215 @@
   <title>Antigravity Skill Forge</title>
   <link rel="stylesheet" href="popup.css">
   <style>
-    :root { --accent: #7c6aff; }
+    :root { --accent: #8b5cf6; }
 
-    /* ── Widen popup ── */
-    body {
-      width: 420px;
-      min-height: 220px;
+    body { width: 420px; background: #07070c; }
+
+    /* ── Ambient background glow ── */
+    .container { position: relative; overflow: hidden; }
+    .container::before {
+      content: '';
+      position: absolute; top: -90px; left: -50px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(139,92,246,0.11) 0%, transparent 68%);
+      pointer-events: none; z-index: 0;
+    }
+    .container > * { position: relative; z-index: 1; }
+
+    /* ── Header ── */
+    .header { padding-bottom: 10px; border-bottom: 1px solid rgba(139,92,246,0.14); }
+    .logo {
+      font-size: 22px;
+      filter: drop-shadow(0 0 8px rgba(139,92,246,0.65));
+    }
+    h1 {
+      font-size: 16px; font-weight: 700; letter-spacing: -0.4px;
+      background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .badge {
+      background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(167,139,250,0.1));
+      border-color: rgba(139,92,246,0.42);
+      color: #a78bfa;
     }
 
-    /* ── Header tweaks ── */
-    .logo { font-size: 16px; }
-
-    /* ── Subtitle ── */
-    .subtitle {
-      font-size: 12px;
-      color: #6666808;
-      line-height: 1.5;
+    /* ── Hero card ── */
+    .hero-card {
+      display: flex; gap: 13px; align-items: flex-start;
+      background: linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(109,40,217,0.04) 100%);
+      border: 1px solid rgba(139,92,246,0.16);
+      border-radius: 12px; padding: 13px 15px;
     }
-    .subtitle code {
-      color: var(--accent);
-      background: var(--accent-dim);
-      border: 1px solid var(--accent-border);
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-family: 'Consolas', 'Monaco', monospace;
+    .hero-icon { font-size: 26px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+    .hero-title {
+      font-size: 12.5px; font-weight: 700; color: #e0e0f0;
+      letter-spacing: -0.2px; margin-bottom: 4px;
     }
-
-    /* ── Main content layout ── */
-    #main-content {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .hero-sub {
+      font-size: 11.5px; color: #66668a; line-height: 1.55;
     }
+    .hero-sub strong { color: #a78bfa; font-weight: 600; }
+    .hero-steps {
+      display: flex; align-items: center; gap: 6px; margin-top: 8px;
+    }
+    .hero-step {
+      font-size: 10.5px; font-weight: 600; color: #555570;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 5px; padding: 3px 8px;
+    }
+    .hero-step-arrow { font-size: 11px; color: rgba(139,92,246,0.5); }
 
-    /* ── Textarea ── */
+    /* ── Input section ── */
+    .forge-label {
+      font-size: 9px; font-weight: 800; letter-spacing: 1.4px;
+      text-transform: uppercase; color: rgba(167,139,250,0.6);
+      margin-bottom: -2px;
+    }
     .skill-textarea {
-      width: 100%;
-      min-height: 120px;
-      max-height: 180px;
-      padding: 11px 13px;
+      width: 100%; min-height: 128px; max-height: 190px;
+      padding: 12px 14px;
       font-size: 12.5px;
       font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: #e0e0e8;
-      background: rgba(255, 255, 255, 0.035);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 10px;
-      outline: none;
-      resize: vertical;
-      line-height: 1.6;
-      transition: border-color 0.2s ease, background 0.2s ease;
+      color: #e0e0f0;
+      background: rgba(139,92,246,0.05);
+      border: 1px solid rgba(139,92,246,0.18);
+      border-radius: 10px; outline: none; resize: vertical;
+      line-height: 1.65;
+      transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
       box-sizing: border-box;
     }
-
     .skill-textarea:focus {
-      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
-      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(139,92,246,0.55);
+      background: rgba(139,92,246,0.08);
+      box-shadow: 0 0 0 3px rgba(139,92,246,0.10), inset 0 0 28px rgba(139,92,246,0.04);
     }
+    .skill-textarea::placeholder { color: rgba(90,90,135,0.65); line-height: 1.65; }
 
-    .skill-textarea::placeholder {
-      color: #3a3a52;
-      line-height: 1.6;
+    /* ── Char counter with mini bar ── */
+    .char-row {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 7px; margin-top: -4px;
     }
-
-    /* ── Char hint ── */
+    .char-bar {
+      height: 2px; width: 56px;
+      background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden;
+    }
+    .char-bar-fill {
+      height: 100%; width: 0%;
+      background: var(--accent); border-radius: 2px;
+      transition: width 0.2s, background 0.3s;
+    }
     .char-hint {
-      font-size: 10px;
-      color: #3a3a52;
-      text-align: right;
-      margin-top: -4px;
-      letter-spacing: 0.2px;
+      font-size: 10px; color: #383855;
+      font-family: 'Consolas', 'Monaco', monospace; letter-spacing: 0.2px;
     }
 
-    /* ── Forge button override (taller, better glow) ── */
+    /* ── Forge button ── */
     #action-btn {
-      padding: 11px 16px;
-      font-size: 13.5px;
-      letter-spacing: 0.2px;
-      border-radius: 10px;
-      margin-top: 2px;
+      padding: 12px 18px; font-size: 13.5px; font-weight: 700;
+      letter-spacing: 0.2px; border-radius: 11px; margin-top: 0;
+      background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 45%, #8b5cf6 100%);
+      border: 1px solid rgba(167,139,250,0.3);
+      box-shadow: 0 4px 22px rgba(124,58,237,0.38), inset 0 1px 0 rgba(255,255,255,0.09);
+      position: relative; overflow: hidden;
+    }
+    #action-btn::after {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 48%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.55s ease;
+    }
+    #action-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 32px rgba(124,58,237,0.55), inset 0 1px 0 rgba(255,255,255,0.11);
+    }
+    #action-btn:hover::after { left: 165%; }
+    #action-btn:active { transform: translateY(0); box-shadow: 0 2px 12px rgba(124,58,237,0.3); }
+    .btn-shortcut {
+      font-size: 10px; opacity: 0.45; font-weight: 400; letter-spacing: 0;
+      margin-left: 7px; font-family: 'Consolas', monospace;
     }
 
     /* ── Loading state ── */
     #loading {
-      padding: 32px 16px 28px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
+      padding: 38px 16px 34px; display: flex; flex-direction: column;
+      align-items: center; gap: 16px;
     }
-
-    #loading .spinner {
-      width: 34px;
-      height: 34px;
-      border-width: 3px;
+    .forge-dots { display: flex; gap: 8px; align-items: center; }
+    .forge-dot {
+      width: 9px; height: 9px; border-radius: 50%; background: var(--accent);
     }
-
+    .forge-dot:nth-child(1) { animation: forgeDot 1.3s ease-in-out 0.0s infinite; }
+    .forge-dot:nth-child(2) { animation: forgeDot 1.3s ease-in-out 0.2s infinite; }
+    .forge-dot:nth-child(3) { animation: forgeDot 1.3s ease-in-out 0.4s infinite; }
+    @keyframes forgeDot {
+      0%, 100% { opacity: 0.18; transform: scale(0.7); }
+      50% {
+        opacity: 1; transform: scale(1.3);
+        background: #c4b5fd;
+        box-shadow: 0 0 12px rgba(196,181,253,0.65);
+      }
+    }
     .loading-text {
-      font-size: 13px;
-      letter-spacing: 0.3px;
+      font-size: 13.5px; font-weight: 600; letter-spacing: 0.1px;
+      color: #a78bfa; margin-top: 0;
+      animation: pulse 1.6s ease-in-out infinite;
     }
-
     .loading-subtext {
-      font-size: 10.5px;
-      color: #44445a;
-      text-align: center;
-      margin-top: -8px;
+      font-size: 11px; color: #40405a; text-align: center; margin-top: -10px;
     }
 
-    /* ── Result area ── */
-    .result-header {
-      margin-bottom: 10px;
+    /* ── Result: file-editor style ── */
+    .skill-file-header {
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(135deg, rgba(139,92,246,0.13) 0%, rgba(109,40,217,0.08) 100%);
+      border: 1px solid rgba(139,92,246,0.24);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 9px 12px 9px 14px;
+    }
+    .skill-file-title {
+      display: flex; align-items: center; gap: 7px;
+    }
+    .skill-file-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(139,92,246,0.5);
+      box-shadow: 0 0 6px rgba(139,92,246,0.4);
+    }
+    .skill-file-name {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.4px;
+      color: #c4b5fd; font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .skill-file-actions { display: flex; gap: 5px; }
+    .action-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; color: #a78bfa;
+      background: rgba(139,92,246,0.12);
+      border: 1px solid rgba(139,92,246,0.26);
+      border-radius: 6px; padding: 4px 9px;
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .action-chip:hover {
+      background: rgba(139,92,246,0.22);
+      border-color: rgba(139,92,246,0.48); color: #ddd6fe;
+    }
+    #result-content.result-content {
+      border-radius: 0 0 10px 10px !important;
+      border: 1px solid rgba(139,92,246,0.24) !important;
+      border-top: none !important;
+      max-height: 270px;
     }
 
-    .result-header span {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-    }
-
-    .result-content {
-      max-height: 300px;
-      border-radius: 10px;
-      padding: 13px 14px;
-    }
-
-    /* ── Action buttons row (copy + download) ── */
-    .result-actions {
-      display: flex;
-      gap: 5px;
-    }
-
-    .copy-md-btn, .download-md-btn {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--accent);
-      background: var(--accent-dim);
-      border: 1px solid var(--accent-border);
-      border-radius: 5px;
-      padding: 4px 9px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-      line-height: 1.4;
-    }
-
-    .copy-md-btn:hover, .download-md-btn:hover {
-      background: var(--accent-hover);
-      border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-    }
-
-    /* ── Rerun button ── */
-    .rerun-btn {
-      margin-top: 8px;
-      border-radius: 8px;
-    }
-
-    /* ── Frontmatter pre block ── */
-    .result-content pre.frontmatter {
-      font-size: 11px;
-      font-family: 'Consolas', 'Monaco', monospace;
-      background: rgba(124, 106, 255, 0.08);
-      border: 1px solid rgba(124, 106, 255, 0.18);
-      border-radius: 7px;
-      padding: 10px 12px;
-      color: #a89fff;
-      margin-bottom: 10px;
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.6;
-    }
-
-    /* ── Model selector ── */
-    .model-row {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .model-select {
-      flex: 1;
-      padding: 7px 10px;
-      font-size: 12px;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: #e0e0e8;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      outline: none;
-      cursor: pointer;
-      transition: border-color 0.2s ease;
-      appearance: none;
-      -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238888a0' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      background-color: rgba(255, 255, 255, 0.04);
-      padding-right: 28px;
-    }
-
-    .model-select:focus {
-      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-    }
-
-    .model-select option {
-      background: #1a1a2e;
-      color: #e0e0e8;
-    }
-
-    .refresh-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      color: #8888a0;
-      font-size: 14px;
-      cursor: pointer;
-      padding: 6px 9px;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
-
-    .refresh-btn:hover {
-      color: var(--accent);
-      border-color: var(--accent-border);
-      background: var(--accent-dim);
-    }
-
-    .refresh-btn.spinning {
-      animation: spin 0.7s linear infinite;
-    }
-
-    .model-status {
-      font-size: 10px;
-      padding: 5px 9px;
-      border-radius: 5px;
-      line-height: 1.4;
-    }
-
-    .model-status.success {
-      color: #4ade80;
-      background: rgba(74, 222, 128, 0.08);
-      border: 1px solid rgba(74, 222, 128, 0.18);
-    }
-
-    .model-status.error {
-      color: #f87171;
-      background: rgba(248, 113, 113, 0.08);
-      border: 1px solid rgba(248, 113, 113, 0.18);
-    }
-
-    /* ── Footer ── */
-    .footer {
-      margin-top: 2px;
-      padding-top: 10px;
-    }
-
-    /* ── Pin hint ── */
-    .pin-hint {
-      display: flex; align-items: center; gap: 9px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 7px; padding: 8px 11px;
-      font-size: 11px; color: #8888a0; line-height: 1.45;
-    }
-    .pin-arrow {
-      font-size: 18px; color: var(--accent); flex-shrink: 0;
-      display: inline-block;
-      animation: pinBounce 1.1s ease-in-out infinite;
-    }
-    @keyframes pinBounce {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(3px, -3px) scale(1.15); }
-    }
-
-    /* ── Model Active Badge ── */
-    .model-badge-row { display: flex; align-items: center; margin-bottom: 8px; }
+    /* ── Model badge + rerun below result ── */
+    .result-footer { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .model-badge-row { display: flex; align-items: center; }
     .model-badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(168,85,247,0.08) 100%);
-      border: 1px solid rgba(139,92,246,0.3);
-      border-radius: 100px;
+      border: 1px solid rgba(139,92,246,0.3); border-radius: 100px;
       padding: 5px 12px 5px 9px;
     }
     .model-dot {
@@ -307,6 +236,67 @@
       font-size: 10.5px; font-weight: 600; letter-spacing: 0.2px;
       font-family: 'Consolas', 'Monaco', monospace; color: #c4b5fd;
     }
+    .rerun-btn { border-radius: 9px; font-size: 12.5px; padding: 9px 14px; margin-top: 0; }
+
+    /* ── Frontmatter block ── */
+    .result-content pre.frontmatter {
+      font-size: 11px; font-family: 'Consolas', 'Monaco', monospace;
+      background: rgba(124,106,255,0.08); border: 1px solid rgba(124,106,255,0.18);
+      border-radius: 7px; padding: 10px 12px; color: #a89fff;
+      margin-bottom: 10px; white-space: pre-wrap;
+      word-break: break-word; line-height: 1.6;
+    }
+
+    /* ── Model selector (settings) ── */
+    .model-row { display: flex; gap: 6px; align-items: center; }
+    .model-select {
+      flex: 1; padding: 7px 10px; font-size: 12px;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #e0e0e8; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;
+      outline: none; cursor: pointer; transition: border-color 0.2s;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238888a0' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      background-color: rgba(255,255,255,0.04); padding-right: 28px;
+    }
+    .model-select:focus { border-color: rgba(139,92,246,0.42); }
+    .model-select option { background: #1a1a2e; color: #e0e0e8; }
+    .refresh-btn {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; color: #8888a0; font-size: 14px;
+      cursor: pointer; padding: 6px 9px; transition: all 0.2s; flex-shrink: 0;
+    }
+    .refresh-btn:hover { color: var(--accent); border-color: rgba(139,92,246,0.3); background: rgba(139,92,246,0.08); }
+    .refresh-btn.spinning { animation: spin 0.7s linear infinite; }
+    .model-status { font-size: 10px; padding: 5px 9px; border-radius: 5px; line-height: 1.4; }
+    .model-status.success { color: #4ade80; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.18); }
+    .model-status.error { color: #f87171; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.18); }
+
+    /* ── Pin hint ── */
+    .pin-hint {
+      display: flex; align-items: center; gap: 9px;
+      background: rgba(139,92,246,0.04); border: 1px solid rgba(139,92,246,0.13);
+      border-radius: 8px; padding: 9px 12px;
+      font-size: 11px; color: #66668a; line-height: 1.5;
+    }
+    .pin-arrow {
+      font-size: 18px; color: var(--accent); flex-shrink: 0;
+      animation: pinBounce 1.1s ease-in-out infinite;
+    }
+    @keyframes pinBounce {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(3px,-3px) scale(1.15); }
+    }
+
+    /* ── Onboarding ── */
+    #onboarding { display: flex; flex-direction: column; gap: 11px; }
+    .onboarding-title { font-size: 15px; font-weight: 700; color: #e0e0f0; }
+    .onboarding-desc { font-size: 12px; color: #7070a0; line-height: 1.65; }
+    .onboarding-desc strong { color: #c4b5fd; }
+    .onboard-field { display: flex; flex-direction: column; gap: 5px; }
+    .settings-hint a { color: var(--accent); text-decoration: none; }
+    .settings-hint a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -322,6 +312,7 @@
       </div>
     </div>
 
+    <!-- First-run Onboarding -->
     <div id="onboarding" class="hidden">
       <p class="onboarding-title">👋 Welcome! Add your API key</p>
       <p class="onboarding-desc">Enter a <strong>Gemini</strong> or <strong>OpenRouter</strong> key — just one is enough to get started.</p>
@@ -346,49 +337,83 @@
       <button id="onboard-save-btn" class="primary-btn">Get Started →</button>
     </div>
 
+    <!-- Main Content -->
     <div id="main-content">
-      <p class="subtitle">Describe a skill idea in plain English → get a ready-to-install <code>SKILL.md</code></p>
+      <div class="hero-card">
+        <span class="hero-icon">✦</span>
+        <div>
+          <p class="hero-title">Turn any idea into a working skill</p>
+          <p class="hero-sub">Describe what you want in plain English → get a ready-to-install <strong>SKILL.md</strong></p>
+          <div class="hero-steps">
+            <span class="hero-step">Describe</span>
+            <span class="hero-step-arrow">→</span>
+            <span class="hero-step">Forge</span>
+            <span class="hero-step-arrow">→</span>
+            <span class="hero-step">Install</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="forge-label" style="margin-top:4px;">Your idea</p>
       <textarea
         id="skill-input"
         class="skill-textarea"
-        placeholder="Describe your skill idea in plain English.&#10;&#10;Example: &quot;Whenever you finish a task, always tell me what you did, what you changed, and if there's anything I should check.&quot;"
+        placeholder="Describe your skill idea in plain English.&#10;&#10;Example: &quot;Whenever you finish a task, always tell me what you did, what changed, and if there's anything I should check.&quot;"
       ></textarea>
-      <p class="char-hint" id="char-hint">0 / 800</p>
-      <button id="action-btn" class="primary-btn">
+      <div class="char-row">
+        <div class="char-bar"><div class="char-bar-fill" id="char-bar-fill"></div></div>
+        <p class="char-hint" id="char-hint">0 / 800</p>
+      </div>
+
+      <button id="action-btn" class="primary-btn" style="margin-top:6px;">
         <span class="btn-text">⚡ Forge Skill</span>
+        <span class="btn-shortcut">Ctrl+↵</span>
       </button>
     </div>
 
+    <!-- Loading -->
     <div id="loading" class="hidden">
-      <div class="spinner"></div>
+      <div class="forge-dots">
+        <div class="forge-dot"></div>
+        <div class="forge-dot"></div>
+        <div class="forge-dot"></div>
+      </div>
       <p class="loading-text">Forging your skill...</p>
       <p class="loading-subtext">Gemini is generating your SKILL.md</p>
     </div>
 
+    <!-- Result -->
     <div id="result" class="hidden">
-      <div class="model-badge-row">
+      <div class="skill-file-header">
+        <div class="skill-file-title">
+          <span class="skill-file-dot"></span>
+          <span class="skill-file-name">SKILL.md</span>
+        </div>
+        <div class="skill-file-actions">
+          <button id="copy-btn" class="action-chip">📋 Copy</button>
+          <button id="download-btn" class="action-chip">⬇ Download</button>
+        </div>
+      </div>
+      <div id="result-content" class="result-content"></div>
+      <div class="result-footer">
+        <div class="model-badge-row">
           <div class="model-badge">
             <span class="model-dot"></span>
             <span class="model-badge-label">Active</span>
             <span class="model-badge-name">gemini-3.5-flash</span>
           </div>
         </div>
-      <div class="result-header">
-        <span>SKILL.md</span>
-        <div class="result-actions">
-          <button id="copy-btn" class="copy-md-btn">📋 Copy</button>
-          <button id="download-btn" class="download-md-btn">⬇ Download</button>
-        </div>
+        <button id="rerun-btn" class="rerun-btn">↻ Re-forge</button>
       </div>
-      <div id="result-content" class="result-content"></div>
-      <button id="rerun-btn" class="rerun-btn">↻ Re-forge</button>
     </div>
 
+    <!-- Error -->
     <div id="error" class="hidden">
       <p class="error-text" id="error-message">Something went wrong.</p>
       <button id="retry-btn" class="secondary-btn">Retry</button>
     </div>
 
+    <!-- Settings Panel -->
     <div id="settings-panel" class="hidden">
       <div class="settings-header">
         <span>API Settings</span>

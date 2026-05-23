@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMessage = document.getElementById('error-message');
   const skillInput = document.getElementById('skill-input');
   const charHint = document.getElementById('char-hint');
+  const charBarFill = document.getElementById('char-bar-fill');
 
   const settingsBtn = document.getElementById('settings-btn');
   const settingsPanel = document.getElementById('settings-panel');
@@ -97,11 +98,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ---- Character counter ----
-  skillInput.addEventListener('input', () => {
+  function updateCharCounter() {
     const len = skillInput.value.length;
     charHint.textContent = len + ' / 800';
-    charHint.style.color = len > 700 ? '#ff9966' : '#44445a';
-  });
+    charHint.style.color = len > 700 ? '#ff9966' : '#383855';
+    if (charBarFill) {
+      charBarFill.style.width = Math.min(100, (len / 800) * 100) + '%';
+      charBarFill.style.background = len > 700 ? '#f97316' : 'var(--accent)';
+    }
+  }
+
+  skillInput.addEventListener('input', updateCharCounter);
 
   // ---- First-run onboarding ----
   const onboarding = document.getElementById('onboarding');
@@ -143,9 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function initApp() {
     showState('idle');
     skillInput.focus();
-    const len = skillInput.value.length;
-    charHint.textContent = len + ' / 800';
-    charHint.style.color = len > 700 ? '#ff9966' : '#44445a';
+    updateCharCounter();
   }
 
   chrome.storage.local.get(['gemini_api_key', 'openrouter_api_key'], (keys) => {
@@ -309,9 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
     lastRawMarkdown = '';
     resultContent.innerHTML = '';
     skillInput.value = '';
-    charHint.textContent = '0 / 800';
-    charHint.style.color = '#44445a';
     chrome.storage.session.remove(['cached_result', 'cached_at']);
+    updateCharCounter();
     showState('idle');
     skillInput.focus();
   });
