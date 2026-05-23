@@ -93,10 +93,11 @@ This single few-shot example pair dropped the generation failure rate from **8/2
 ## 📅 180 Days of Building
 This project is part of a larger developer journey: shipping one useful AI tool/extension every day for 180 days.
 
+This release is part of the **Google I/O 2026 Week — 7 Project Sprint** (`IO-1`), powered by **Gemini 3.5 Flash**.
+
 Follow along for daily releases and tech-stack deep dives:
 - **Twitter / X**: [@happy_ships](https://x.com/happy_ships)
 - **Day**: `07 / 180`
-- **Next Release**: `Gemini Flash Benchmarker`
 
 ---
 
